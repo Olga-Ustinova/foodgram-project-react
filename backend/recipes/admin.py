@@ -22,7 +22,8 @@ class TagAdmin(admin.ModelAdmin):
 
 
 class RecipeAdmin(admin.ModelAdmin):
-    list_display = ('pk', 'author', 'name')
+    list_display = ('pk', 'author', 'name', 'in_favorite')
+    readonly_fields = ('in_favorite',)
     search_fields = ('name',)
     list_filter = ('author', 'name', 'tags')
     empty_value_display = '-пусто-'

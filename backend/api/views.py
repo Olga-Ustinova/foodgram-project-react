@@ -17,7 +17,8 @@ from recipes.models import (
     Ingredient,
     Recipe,
     ShoppingCart,
-    Tag,)
+    Tag,
+)
 from users.models import User
 
 from .filters import IngredientFilter
@@ -27,7 +28,8 @@ from .serializers import (
     IngredientSerializer,
     RecipeReadSerializer,
     RecipeWriteSerializer,
-    TagSerializer,)
+    TagSerializer,
+)
 
 
 class CustomUserViewSet(djoser_views.UserViewSet):
@@ -94,8 +96,8 @@ class RecipeViewSet(viewsets.ModelViewSet):
     def get_serializer_class(self):
         """Выбор сериализатора при безопасных и не безопасных методах."""
         if self.request.method in SAFE_METHODS:
-            return RecipeWriteSerializer
-        return RecipeReadSerializer
+            return RecipeReadSerializer
+        return RecipeWriteSerializer
 
     @action(
         detail=True,
@@ -179,20 +181,24 @@ class RecipeViewSet(viewsets.ModelViewSet):
         # Ищем ингредиенты из списка покупок пользователя
         ingredients = (
             IngredientInRecipe.objects.filter(
-                recipe__shopping_cart__author=request.user)
+                recipe__shopping_cart__author=request.user
+            )
             .values('ingredient__name', 'ingredient__measurement_unit')
-            .annotate(amount=Sum('amount')))
+            .annotate(amount=Sum('amount'))
+        )
         # Генерируем содержимое списка покупок
         shopping_list = [
             f'{ingredient["ingredient__name"]}: {ingredient["ingredient__measurement_unit"]} {ingredient["amount"]}'
-            for ingredient in ingredients]
+            for ingredient in ingredients
+        ]
         # Если список покупок пуст, создаем пустой файл
         if not shopping_list:
             shopping_list = ['Корзина пуста.']
         filename = f'{user.username}_shopping_cart.txt'
         # Создаем HTTP-ответ с содержимым файла и возвращаем его
         response = HttpResponse(
-            '\n'.join(shopping_list), content_type='text/plain')
+            '\n'.join(shopping_list), content_type='text/plain'
+        )
         response['Content-Disposition'] = f'attachment; filename={filename}'
         return response
 

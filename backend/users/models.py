@@ -10,8 +10,7 @@ class User(AbstractUser):
     email = models.EmailField(
         unique=True,
         max_length=MAX_EMAIL_LENGTH,
-        verbose_name='Адрес электронной почты',
-    )
+        verbose_name='Адрес электронной почты',)
     username = models.CharField(
         unique=True,
         max_length=MAX_NAME_LENGTH,
@@ -20,17 +19,13 @@ class User(AbstractUser):
                 r'^[\w.@+-]+\Z', 'Введите правильный юзернейм.', 'invalid'
             ),
         ],
-        verbose_name='Уникальный юзернейм',
-    )
+        verbose_name='Уникальный юзернейм',)
     first_name = models.CharField(
-        max_length=MAX_NAME_LENGTH, verbose_name='Имя'
-    )
+        max_length=MAX_NAME_LENGTH, verbose_name='Имя')
     last_name = models.CharField(
-        max_length=MAX_NAME_LENGTH, verbose_name='Фамилия'
-    )
+        max_length=MAX_NAME_LENGTH, verbose_name='Фамилия')
     password = models.CharField(
-        max_length=MAX_NAME_LENGTH, verbose_name='Пароль'
-    )
+        max_length=MAX_NAME_LENGTH, verbose_name='Пароль')
 
     class Meta:
         verbose_name = 'Пользователь'
@@ -46,14 +41,12 @@ class Follow(models.Model):
         User,
         on_delete=models.CASCADE,
         related_name='follower',
-        verbose_name='Подписчик',
-    )
+        verbose_name='Подписчик',)
     following = models.ForeignKey(
         User,
         on_delete=models.CASCADE,
         related_name='following',
-        verbose_name='Автор',
-    )
+        verbose_name='Автор',)
 
     class Meta:
         verbose_name = 'Подписка'
