@@ -333,6 +333,10 @@ class IngredientSerializer(serializers.ModelSerializer):
 
 
 class FavoritedSerializer(serializers.ModelSerializer):
+    """
+    Сериализатор для получения/добавления/удаления рецепта из/в избранного/е
+    у текущего пользователя.
+    """
     def validate(self, data):
         request = self.context['request']
         author = data['author']
@@ -355,6 +359,10 @@ class FavoritedSerializer(serializers.ModelSerializer):
 
 
 class ShoppingCartSerializer(serializers.ModelSerializer):
+    """
+    Сериализатор для получения/добавления/удаления рецепта из/в списка покупок
+    у текущего пользователя.
+    """
     def validate(self, data):
         request = self.context['request']
         author = data['author']
