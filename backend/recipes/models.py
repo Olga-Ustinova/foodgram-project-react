@@ -30,7 +30,7 @@ class Tag(models.Model):
     name = models.CharField(
         max_length=MAX_TAG_LENGTH,
         validators=[validators.RegexValidator(
-            r'^[-a-zA-Z0-9_]+$',
+            r'^[\w -]',
             'Введите правильное имя.',
             'invalid'),
         ],
