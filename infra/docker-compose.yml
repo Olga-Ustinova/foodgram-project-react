@@ -24,7 +24,6 @@ services:
       context: ../frontend
       dockerfile: Dockerfile
     volumes:
-      #- ../frontend/:/app/result_build/
       - static:/static
   nginx:
     image: nginx:1.19.3

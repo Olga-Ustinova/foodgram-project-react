@@ -29,9 +29,19 @@ class Ingredient(models.Model):
 class Tag(models.Model):
     name = models.CharField(
         max_length=MAX_TAG_LENGTH,
+        validators=[validators.RegexValidator(
+            r'^[-a-zA-Z0-9_]+$',
+            'Введите правильное имя.',
+            'invalid'),
+        ],
         verbose_name='Тег')
     color = models.CharField(
         max_length=7,
+        validators=[validators.RegexValidator(
+            r'^#[0-9a-fA-F]{6}$',
+            'Введите правильный цвет в формате HEX (например, #RRGGBB).',
+            'invalid_color'),
+        ],
         verbose_name='Цвет в HEX')
     slug = models.SlugField(
         max_length=200,

@@ -7,18 +7,17 @@ from rest_framework import status, viewsets
 from rest_framework.decorators import action
 from rest_framework.permissions import SAFE_METHODS, IsAuthenticated
 from rest_framework.response import Response
-from rest_framework.serializers import ValidationError
 
 from api.paginations import ApiPagination
 from api.permissions import AdminOrReadOnlyPermission
-from recipes.models import (Favorited, Ingredient, IngredientInRecipe,
-                            Recipe, ShoppingCart, Tag,)
+from recipes.models import Ingredient, IngredientInRecipe, Recipe, Tag
 from users.models import User
 
 from .filters import IngredientFilter, RecipeFilter
-from .serializers import (FollowSerializer, FollowUserSerializer,
-                          IngredientSerializer, RecipeReadSerializer,
-                          RecipeWriteSerializer, TagSerializer,)
+from .serializers import (FavoritedSerializer, FollowSerializer,
+                          FollowUserSerializer, IngredientSerializer,
+                          RecipeReadSerializer, RecipeWriteSerializer,
+                          ShoppingCartSerializer, TagSerializer,)
 
 
 class CustomUserViewSet(djoser_views.UserViewSet):
@@ -36,7 +35,8 @@ class CustomUserViewSet(djoser_views.UserViewSet):
             data={
                 'user': user.username,
                 'following': user_to_subscribe.username,
-            }
+            },
+            context={'request': request},
         )
         serializer.is_valid(raise_exception=True)
         serializer.save()
@@ -49,9 +49,15 @@ class CustomUserViewSet(djoser_views.UserViewSet):
         """Удалет связь между пользователями."""
         user_to_unsubscribe = get_object_or_404(User, pk=id)
         user = request.user
+        serializer = FollowSerializer(
+            data={
+                'user': user.username,
+                'following': user_to_unsubscribe.username,
+            },
+            context={'request': request},
+        )
+        serializer.is_valid(raise_exception=True)
         follow = user_to_unsubscribe.following.filter(user=user)
-        if not follow.exists():
-            raise ValidationError('Подписики не существует')
         follow.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
 
@@ -95,11 +101,15 @@ class RecipeViewSet(viewsets.ModelViewSet):
         Получить/добавить рецепт
         из/в избранного/е у текущего пользоватля.
         """
-        recipe = get_object_or_404(Recipe, pk=pk)
-        favorites = recipe.favorites.filter(author=request.user)
-        if favorites.exists():
-            raise ValidationError('Рецепт уже есть в избранном.')
-        Favorited.objects.create(author=request.user, recipe=recipe)
+        serializer = FavoritedSerializer(
+            data={
+                'author': request.user.pk,
+                'recipe': pk,
+            },
+            context={'request': request},
+        )
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
         return Response(
             {'detail': 'Рецепт успешно добавлен в избранное.'},
             status=status.HTTP_201_CREATED,)
@@ -109,10 +119,16 @@ class RecipeViewSet(viewsets.ModelViewSet):
         """
         Удалить рецепт из избранного у текущего пользоватля.
         """
+        serializer = FavoritedSerializer(
+            data={
+                'author': request.user.pk,
+                'recipe': pk,
+            },
+            context={'request': request},
+        )
+        serializer.is_valid(raise_exception=True)
         recipe = get_object_or_404(Recipe, pk=pk)
         favorites = recipe.favorites.filter(author=request.user)
-        if not favorites.exists():
-            raise ValidationError('Рецепт не найден в избранном.')
         favorites.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
 
@@ -125,11 +141,15 @@ class RecipeViewSet(viewsets.ModelViewSet):
         Получить/добавить рецепт из/в избранного/е из списка покупок у
         текущего пользователя.
         """
-        recipe = get_object_or_404(Recipe, pk=pk)
-        shopping_cart = recipe.shopping_cart.filter(author=request.user)
-        if shopping_cart.exists():
-            raise ValidationError('Рецепт уже есть в списке покупок.')
-        ShoppingCart.objects.create(author=request.user, recipe=recipe)
+        serializer = ShoppingCartSerializer(
+            data={
+                'author': request.user.pk,
+                'recipe': pk,
+            },
+            context={'request': request},
+        )
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
         return Response(
             {'detail': 'Рецепт успешно добавлен в список покупок.'},
             status=status.HTTP_201_CREATED,)
@@ -139,10 +159,16 @@ class RecipeViewSet(viewsets.ModelViewSet):
         """
         Удалить рецепт из списка покупок у текущего пользоватля.
         """
+        serializer = ShoppingCartSerializer(
+            data={
+                'author': request.user.pk,
+                'recipe': pk,
+            },
+            context={'request': request},
+        )
+        serializer.is_valid(raise_exception=True)
         recipe = get_object_or_404(Recipe, pk=pk)
         shopping_cart = recipe.shopping_cart.filter(author=request.user)
-        if not shopping_cart.exists():
-            raise ValidationError('Рецепта нет в списке покупок.')
         shopping_cart.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
 
