@@ -23,13 +23,11 @@ services:
     image: olgau/foodgram_frontend
     volumes:
       - static:/static
-    depends_on:
-      - db
   nginx:
     image: nginx:1.19.3
-    env_file: .env
     ports:
       - 10000:80  
     volumes:
+      - ./nginx.conf:/etc/nginx/conf.d/default.conf
       - static:/static
       - media:/media
