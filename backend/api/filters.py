@@ -3,7 +3,8 @@ from django_filters import (
     FilterSet,
     ModelChoiceFilter,
     ModelMultipleChoiceFilter,
-    NumberFilter,)
+    NumberFilter,
+)
 
 from recipes.models import Ingredient, Recipe, Tag
 from users.models import User

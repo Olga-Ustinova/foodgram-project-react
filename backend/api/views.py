@@ -14,10 +14,16 @@ from recipes.models import Ingredient, IngredientInRecipe, Recipe, Tag
 from users.models import User
 
 from .filters import IngredientFilter, RecipeFilter
-from .serializers import (FavoritedSerializer, FollowSerializer,
-                          FollowUserSerializer, IngredientSerializer,
-                          RecipeReadSerializer, RecipeWriteSerializer,
-                          ShoppingCartSerializer, TagSerializer,)
+from .serializers import (
+    FavoritedSerializer,
+    FollowSerializer,
+    FollowUserSerializer,
+    IngredientSerializer,
+    RecipeReadSerializer,
+    RecipeWriteSerializer,
+    ShoppingCartSerializer,
+    TagSerializer,
+)
 
 
 class CustomUserViewSet(djoser_views.UserViewSet):
